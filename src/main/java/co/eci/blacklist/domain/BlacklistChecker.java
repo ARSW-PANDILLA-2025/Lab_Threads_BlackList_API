@@ -111,23 +111,15 @@ public class BlacklistChecker {
      * Worker thread that processes a specific segment of blacklist servers.
      */
     private static class BlacklistWorkerThread extends Thread {
-        /** The target IP address to search for */
+        
         private final String ip;
-        /** Starting index of the server range (inclusive) */
         private final int startIdx;
-        /** Ending index of the server range (exclusive) */
         private final int endIdx;
-        /** Data source facade for blacklist server queries */
         private final HostBlackListsDataSourceFacade facade;
-        /** Shared list for collecting match results */
         private final List<Integer> matches;
-        /** Shared counter for total matches found across all threads */
         private final AtomicInteger found;
-        /** Shared counter for total servers checked across all threads */
         private final AtomicInteger checked;
-        /** Shared flag for coordinating early stopping */
         private final AtomicBoolean stop;
-        /** The threshold for triggering early stopping */
         private final int threshold;
 
         /**

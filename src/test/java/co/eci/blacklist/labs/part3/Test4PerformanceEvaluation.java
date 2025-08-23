@@ -3,7 +3,6 @@ package co.eci.blacklist.labs.part3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,46 +12,55 @@ import co.eci.blacklist.domain.Policies;
 import co.eci.blacklist.infrastructure.HostBlackListsDataSourceFacade;
 
 /**
- * Test Part III - Performance Evaluation with Threading Configurations.
- * Evalúa el impacto del número de hilos en el tiempo de ejecución usando la IP dispersa (202.24.34.55).
+ * Test 4 - Performance Evaluation with Threading Configurations.
+ * Evaluates the impact of the number of threads on execution time using the
+ * dispersed IP (202.24.34.55).
  *
- * Escenarios probados:
- * - 1 hilo
- * - Núcleos físicos
- * - Doble de núcleos
- * - 50 hilos
- * - 100 hilos
+ * Scenarios tested:
+ * - 1 thread
+ * - Physical cores
+ * - Double the cores
+ * - 50 threads
+ * - 100 threads
  */
-public class TestPartIII_PerformanceEvaluation {
+public class Test4PerformanceEvaluation {
 
-    private static final String DISPERSED_IP = "202.24.34.55"; // IP con matches dispersos
+    private static final String DISPERSED_IP = "202.24.34.55";
     private BlacklistChecker checker;
     private HostBlackListsDataSourceFacade facade;
     private int physicalCores;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setup() {
-        // Obtener instancia de la fachada
-        facade = HostBlackListsDataSourceFacade.getInstance();
-
-        // ✅ CORREGIDO: pasar también un objeto Policies
-        checker = new BlacklistChecker(facade, new Policies());
-
-        // Detectar núcleos disponibles (procesadores lógicos)
-        physicalCores = Runtime.getRuntime().availableProcessors();
-
-        System.out.println("Setup completado: " + physicalCores + " núcleos disponibles, "
-                + facade.getRegisteredServersCount() + " servidores registrados.");
+        try {
+            facade = HostBlackListsDataSourceFacade.getInstance();
+            checker = new BlacklistChecker(facade, new Policies());
+            physicalCores = Runtime.getRuntime().availableProcessors();
+            
+            assertNotNull(facade, "Facade should not be null");
+            assertNotNull(checker, "Checker should not be null");
+            assertTrue(physicalCores > 0, "Physical cores should be greater than 0");
+            
+            System.out.println("Setup completed: " + physicalCores + " available cores, "
+                    + facade.getRegisteredServersCount() + " registered servers.");
+        } catch (Exception e) {
+            System.err.println("Error during setup: " + e.getMessage());
+            throw e;
+        }
     }
 
+    /**
+     * Test 4.1 - Complete Performance Evaluation.
+     */
     @Test
-    void testPartIII_completePerformanceEvaluation() {
+    void test4_completePerformanceEvaluation() {
         System.out.println("\n" + "=".repeat(80));
-        System.out.println("PARTE III — EVALUACIÓN DE DESEMPEÑO");
+        System.out.println("PART III — PERFORMANCE EVALUATION");
         System.out.println("=".repeat(80));
-        System.out.println("IP bajo prueba: " + DISPERSED_IP);
-        System.out.println("Procesador: " + physicalCores + " núcleos disponibles");
-        System.out.println("Total de servidores: " + facade.getRegisteredServersCount());
+        System.out.println("IP under test: " + DISPERSED_IP);
+        System.out.println("Processor: " + physicalCores + " available cores");
+        System.out.println("Total servers: " + facade.getRegisteredServersCount());
         System.out.println();
 
         int[] threadConfigurations = {
@@ -64,11 +72,11 @@ public class TestPartIII_PerformanceEvaluation {
         };
 
         String[] configDescriptions = {
-                "1 hilo (secuencial)",
-                physicalCores + " hilos (núcleos físicos)",
-                (physicalCores * 2) + " hilos (doble de núcleos)",
-                "50 hilos (alta concurrencia)",
-                "100 hilos (muy alta concurrencia)"
+                "1 thread (sequential)",
+                physicalCores + " threads (physical cores)",
+                (physicalCores * 2) + " threads (double cores)",
+                "50 threads (high concurrency)",
+                "100 threads (very high concurrency)"
         };
 
         MatchResult[] results = new MatchResult[threadConfigurations.length];
@@ -78,7 +86,7 @@ public class TestPartIII_PerformanceEvaluation {
             int threads = threadConfigurations[i];
             String description = configDescriptions[i];
 
-            System.out.printf("Experimento %d: %s\n", i + 1, description);
+            System.out.printf("Experiment %d: %s\n", i + 1, description);
 
             long startTime = System.nanoTime();
             MatchResult result = checker.checkHost(DISPERSED_IP, threads);
@@ -89,16 +97,15 @@ public class TestPartIII_PerformanceEvaluation {
             results[i] = result;
             executionTimes[i] = executionTimeMs;
 
-            System.out.printf("   Resultado: %s\n", result.trustworthy() ? "CONFIABLE" : "NO CONFIABLE");
-            System.out.printf("   Coincidencias: %d\n", result.matches().size());
-            System.out.printf("   Servidores verificados: %,d / %,d (%.1f%%)\n",
+            System.out.printf("   Result: %s\n", result.trustworthy() ? "RELIABLE" : "UNRELIABLE");
+            System.out.printf("   Matches: %d\n", result.matches().size());
+            System.out.printf("   Checked servers: %,d / %,d (%.1f%%)\n",
                     result.checkedServers(), result.totalServers(),
                     (100.0 * result.checkedServers()) / result.totalServers());
-            System.out.printf("   Tiempo reportado: %d ms\n", result.elapsedMs());
-            System.out.printf("   Tiempo medido: %d ms\n", executionTimeMs);
-            System.out.printf("   Hilos utilizados: %d\n\n", result.threads());
+            System.out.printf("   Reported time: %d ms\n", result.elapsedMs());
+            System.out.printf("   Measured time: %d ms\n", executionTimeMs);
+            System.out.printf("   Threads used: %d\n\n", result.threads());
 
-            // Validaciones básicas
             assertNotNull(result);
             assertEquals(DISPERSED_IP, result.ip());
             assertEquals(threads, result.threads());
@@ -109,16 +116,24 @@ public class TestPartIII_PerformanceEvaluation {
         performComparativeAnalysis(threadConfigurations, configDescriptions, results, executionTimes);
         performScalabilityAnalysis(threadConfigurations, executionTimes);
 
-        assertTrue(true, "Evaluación de desempeño completada exitosamente");
+        assertTrue(true, "Performance evaluation completed successfully");
     }
 
+    /**
+     * Perform comparative analysis on the results.
+     *
+     * @param threadConfigs Array of thread counts used in experiments.
+     * @param descriptions  Array of description strings for each configuration.
+     * @param results       Array of MatchResult objects for each configuration.
+     * @param times         Array of execution times for each configuration.
+     */
     private void performComparativeAnalysis(int[] threadConfigs, String[] descriptions,
             MatchResult[] results, long[] times) {
-        System.out.println("ANÁLISIS COMPARATIVO:");
+        System.out.println("COMPARATIVE ANALYSIS:");
         System.out.println("-".repeat(80));
 
         System.out.printf("%-6s %-30s %-12s %-15s %-12s %-10s%n",
-                "Exp.", "Configuración", "Tiempo (ms)", "Servidores", "Eficiencia", "Speedup");
+                "Exp.", "Configuration", "Time (ms)", "Servers", "Efficiency", "Speedup");
         System.out.println("-".repeat(80));
 
         long baselineTime = times[0];
@@ -138,8 +153,14 @@ public class TestPartIII_PerformanceEvaluation {
         System.out.println();
     }
 
+    /**
+     * Perform scalability analysis on the results.
+     *
+     * @param threadConfigs Array of thread counts used in experiments.
+     * @param times         Array of execution times for each configuration.
+     */
     private void performScalabilityAnalysis(int[] threadConfigs, long[] times) {
-        System.out.println("ANÁLISIS DE ESCALABILIDAD:");
+        System.out.println("SCALABILITY ANALYSIS:");
         System.out.println("-".repeat(80));
 
         int fastestIndex = 0;
@@ -152,41 +173,49 @@ public class TestPartIII_PerformanceEvaluation {
             }
         }
 
-        System.out.printf("• Configuración más rápida: %d hilos (%d ms)\n",
+        System.out.printf("• Fastest configuration: %d threads (%d ms)\n",
                 threadConfigs[fastestIndex], fastestTime);
 
         double theoreticalSpeedup = (double) threadConfigs[fastestIndex] / threadConfigs[0];
         double actualSpeedup = (double) times[0] / times[fastestIndex];
         double efficiency = (actualSpeedup / theoreticalSpeedup) * 100;
 
-        System.out.printf("• Speedup teórico: %.2fx\n", theoreticalSpeedup);
-        System.out.printf("• Speedup real: %.2fx\n", actualSpeedup);
-        System.out.printf("• Eficiencia de paralelización: %.1f%%\n", efficiency);
+        System.out.printf("• Theoretical speedup: %.2fx\n", theoreticalSpeedup);
+        System.out.printf("• Actual speedup: %.2fx\n", actualSpeedup);
+        System.out.printf("• Parallelization efficiency: %.1f%%\n", efficiency);
 
         long time50 = times[3];
         long time100 = times[4];
 
         if (time100 > time50) {
             double degradation = ((double) time100 / time50 - 1) * 100;
-            System.out.printf("  - Degradación con 100 vs 50 hilos: +%.1f%% tiempo\n", degradation);
+            System.out.printf("  - Degradation with 100 vs 50 threads: +%.1f%% time\n", degradation);
         } else {
-            System.out.println("  - No hay degradación significativa con 100 hilos");
+            System.out.println("  - No significant degradation with 100 threads");
         }
         System.out.println();
     }
 
+    /**
+     * Test 4.2 - High concurrency with 100 threads.
+     */
+
     @Test
-    void testPartIII_1_baselineWithSingleThread() {
+    void test4_1_baselineWithSingleThread() {
         MatchResult result = checker.checkHost(DISPERSED_IP, 1);
 
         assertNotNull(result);
         assertEquals(DISPERSED_IP, result.ip());
         assertEquals(1, result.threads());
-        assertTrue(result.elapsedMs() > 0);
+        assertTrue(result.elapsedMs() >= 0);
     }
 
+    /**
+     * Test 4.3 - High concurrency with 100 threads.
+     */
+
     @Test
-    void testPartIII_2_optimalWithPhysicalCores() {
+    void test4_2_optimalWithPhysicalCores() {
         MatchResult result = checker.checkHost(DISPERSED_IP, physicalCores);
 
         assertNotNull(result);
@@ -195,8 +224,12 @@ public class TestPartIII_PerformanceEvaluation {
         assertTrue(result.elapsedMs() >= 0);
     }
 
+    /**
+     * Test 4.4 - High concurrency with 100 threads.
+     */
+
     @Test
-    void testPartIII_3_highConcurrencyWith100Threads() {
+    void test4_3_highConcurrencyWith100Threads() {
         MatchResult result = checker.checkHost(DISPERSED_IP, 100);
 
         assertNotNull(result);

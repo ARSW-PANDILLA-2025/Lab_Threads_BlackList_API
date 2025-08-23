@@ -1,8 +1,10 @@
 package co.eci.blacklist.infrastructure;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -10,7 +12,7 @@ import java.util.logging.Logger;
  * In the original lab this class is provided and should not be modified.
  * Here we provide a minimal in-memory implementation suitable for the REST service and tests.
  */
-public class HostBlackListsDataSourceFacade {
+public final class HostBlackListsDataSourceFacade {
 
     private static final Logger logger = Logger.getLogger(HostBlackListsDataSourceFacade.class.getName());
     private static final HostBlackListsDataSourceFacade INSTANCE = new HostBlackListsDataSourceFacade();
@@ -63,7 +65,7 @@ public class HostBlackListsDataSourceFacade {
      * @return A set of server indices where the IP is blacklisted, or an empty set if not found.
      */
     public void reportAsTrustworthy(String ip) {
-        logger.info("HOST " + ip + " Reported as trustworthy");
+        logger.log(Level.INFO, "HOST {0} Reported as trustworthy", ip);
     }
 
     /**
@@ -72,7 +74,7 @@ public class HostBlackListsDataSourceFacade {
      * @param ip The IP address to report.
      */
     public void reportAsNotTrustworthy(String ip) {
-        logger.info("HOST " + ip + " Reported as NOT trustworthy");
+        logger.log(Level.INFO, "HOST {0} Reported as NOT trustworthy", ip);
     }
 
     /**

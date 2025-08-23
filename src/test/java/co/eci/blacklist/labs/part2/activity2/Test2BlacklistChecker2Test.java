@@ -3,7 +3,9 @@ package co.eci.blacklist.labs.part2.activity2;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +17,7 @@ import co.eci.blacklist.labs.part2.BlacklistChecker2;
  * Verifies the correct functionality of the parallelized blacklist checking
  * implementation using traditional Thread class.
  *
- * @author 
+ * @author
  * @version 1.0
  */
 public class Test2BlacklistChecker2Test {
@@ -24,8 +26,8 @@ public class Test2BlacklistChecker2Test {
     private HostBlackListsDataSourceFacade facade;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
-        // ✅ inicialización correcta
         facade = HostBlackListsDataSourceFacade.getInstance();
     }
 
@@ -35,7 +37,7 @@ public class Test2BlacklistChecker2Test {
      */
     @Test
     void shouldFindIPInAssignedRange() throws InterruptedException {
-        String testIP = "200.24.34.55"; // Known to be in early servers
+        String testIP = "200.24.34.55";
         BlacklistChecker2 checker = new BlacklistChecker2(testIP, 0, 100, facade);
 
         checker.start();
@@ -51,7 +53,7 @@ public class Test2BlacklistChecker2Test {
      */
     @Test
     void shouldWorkWithMultipleThreadsOnDifferentSegments() throws InterruptedException {
-        String testIP = "200.24.34.55"; 
+        String testIP = "200.24.34.55";
         int totalServers = facade.getRegisteredServersCount();
         int nThreads = 4;
         int segmentSize = totalServers / nThreads;
@@ -86,8 +88,8 @@ public class Test2BlacklistChecker2Test {
      */
     @Test
     void shouldImplementCompleteCheckHostLogic() throws InterruptedException {
-        String trustworthyIP = "212.24.24.55"; // clean
-        String suspiciousIP = "200.24.34.55"; // blacklisted
+        String trustworthyIP = "212.24.24.55";
+        String suspiciousIP = "200.24.34.55";
         int nThreads = 4;
 
         List<Integer> trustworthyResult = performCheckHost(trustworthyIP, nThreads);
@@ -106,7 +108,7 @@ public class Test2BlacklistChecker2Test {
     void shouldHandleRemainderInServerDivision() throws InterruptedException {
         String testIP = "200.24.34.55";
         int totalServers = facade.getRegisteredServersCount();
-        int nThreads = 7; 
+        int nThreads = 7;
         List<BlacklistChecker2> threads = new ArrayList<>();
         int segmentSize = totalServers / nThreads;
 
@@ -134,7 +136,7 @@ public class Test2BlacklistChecker2Test {
      */
     @Test
     void shouldMaintainThreadSafetyInResults() throws InterruptedException {
-        String testIP = "202.24.34.55"; 
+        String testIP = "202.24.34.55";
         int nThreads = 8;
         int totalServers = facade.getRegisteredServersCount();
         int segmentSize = totalServers / nThreads;
@@ -168,7 +170,14 @@ public class Test2BlacklistChecker2Test {
         }
     }
 
-    // 🔹 Helper method
+    /**
+     * Helper method to perform the complete checkHost logic using multiple threads.
+     *
+     * @param ip       The IP address to check.
+     * @param nThreads The number of threads to use.
+     * @return List of server indices where the IP was found.
+     * @throws InterruptedException If any thread is interrupted.
+     */
     private List<Integer> performCheckHost(String ip, int nThreads) throws InterruptedException {
         int totalServers = facade.getRegisteredServersCount();
         int segmentSize = totalServers / nThreads;

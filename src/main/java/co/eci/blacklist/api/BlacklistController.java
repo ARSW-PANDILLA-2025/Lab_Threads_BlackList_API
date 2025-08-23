@@ -16,15 +16,18 @@
 
 package co.eci.blacklist.api;
 
-import co.eci.blacklist.api.dto.CheckResponseDTO;
-import co.eci.blacklist.application.BlacklistService;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import java.net.UnknownHostException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import co.eci.blacklist.api.dto.CheckResponseDTO;
+import co.eci.blacklist.application.BlacklistService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 /**
  * REST controller for blacklist verification operations.
@@ -61,7 +64,7 @@ public class BlacklistController {
             @RequestParam String ip,
             @RequestParam(defaultValue = "0") @Min(0) @Max(10_000) int threads) {
 
-        // ✅ Validate IP before executing service
+        // Validates IP first
         if (!isValidIp(ip)) {
             return ResponseEntity.badRequest().body("Invalid IP address: " + ip);
         }
@@ -82,7 +85,7 @@ public class BlacklistController {
             java.net.InetAddress inet = java.net.InetAddress.getByName(ip);
             // Ensure that the parsed IP matches the input (avoid accepting things like hostnames)
             return inet.getHostAddress().equals(ip);
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
             return false;
         }
     }
