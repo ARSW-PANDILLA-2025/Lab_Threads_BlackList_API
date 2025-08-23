@@ -222,11 +222,11 @@ src/test/java/
 mvn spring-boot:run
 ```
 
-![alt text](<Picture1.jpg>)
+![alt text](<\src\main\resources\Pictures\Picture1.jpg>)
 
 2. **Launch jVisualVM and connect to the running application**
 
-![alt text](<Picture2.jpg>)
+![alt text](<src\main\resources\Pictures\Picture2.jpg>)
 
 3. **Execute performance tests with different configurations:**
 ```bash
@@ -240,15 +240,15 @@ curl "http://localhost:8080/api/v1/blacklist/check?ip=202.24.34.55&threads=6"
 curl "http://localhost:8080/api/v1/blacklist/check?ip=202.24.34.55&threads=100"
 ```
 
-![alt text](<Picture3.jpg>)
+![alt text](<src/main/resources/Pictures/Picture3.jpg>)
 
 4. **Monitor CPU usage, memory consumption, and thread activity**
 
-![alt text](<Picture2.jpg>)
+![alt text](<src\main\resources\Pictures\Picture2.jpg>)
 
 5. **Record the execution times**
 
-![alt text](<Picture4.jpg>)
+![alt text](<src\main\resources\Pictures\Picture4.jpg>)
 
 ### 📈 Analysis of results
 
@@ -257,11 +257,11 @@ Using the data collected, plot a graph with:
 - **X-axis:** number of threads
 - **Y-axis:** execution time (ms)
 
-![alt text](Picture5.jpg)
+![alt text](src\main\resources\Pictures\Picture5.jpg)
 
 ### 📉 Graph
 
-![alt text](Picture6.png)
+![alt text](src\main\resources\Pictures\Picture6.png)
 
 ### Questions
 
