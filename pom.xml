@@ -77,6 +77,17 @@
             <release>17</release>
           </configuration>
         </plugin>
+
+        <!-- Execute PerformanceRunner -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <mainClass>co.eci.blacklist.labs.part3.PerformanceRunner</mainClass>
+            <classpathScope>test</classpathScope>
+          </configuration>
+        </plugin>
       </plugins>
     </build>
   </project>
